@@ -1,0 +1,22 @@
+#!/bin/dash
+set -eu
+path="$1"
+
+chmod_if_exists() {
+    permissions=$1
+    shift
+    for item in "$@"; do
+        if [ ! -e "$item" ]; then
+            continue
+        fi
+        
+        current_permissions="$(stat -c %a "$item")"
+        if [ "$current_permissions" != "$permissions" ]; then
+            chmod -R "$permissions" "$item"
+        fi
+    done
+}
+
+chmod_if_exists 755 "$path/usr/bin/"*
+chmod_if_exists 755 "$path/usr/local/bin/"*
+chmod_if_exists 755 "$path/build.d/"*

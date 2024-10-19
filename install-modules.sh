@@ -1,5 +1,7 @@
 #!/bin/bash
-. "$(dirname "$(realpath "$0")")/src/common.sh"
+
+root_dir="$(dirname "$(realpath "$0")")"
+modules_dir="$root_dir/module"
 
 if [  $# -eq 0 ]; then
     echo "Usage: $0 <module1> <module2>..."
@@ -9,6 +11,18 @@ if [  $# -eq 0 ]; then
 fi
 
 set -euo pipefail
+
+error () {
+    echo -e "\e[31m$*\e[0m"
+    exit 1
+}
+
+warn() {
+    echo -e "\e[33m$*\e[0m"
+}
+
+
+export PATH="$root_dir/bin:$PATH"
 
 cd "$root_dir"
 tmp_dir="$(mktemp -d)"
