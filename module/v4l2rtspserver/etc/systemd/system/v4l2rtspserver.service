@@ -1,0 +1,10 @@
+[Unit]
+Description=v4l2rtspserver camera stream
+After=network-online.target
+
+[Service]
+Restart=always
+ExecStart=/usr/local/bin/v4l2rtspserver-start.sh
+
+[Install]
+WantedBy=multi-user.target

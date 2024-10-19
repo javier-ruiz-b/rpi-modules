@@ -1,0 +1,9 @@
+[Unit]
+Description=Trigger watchdog with internet connection
+After=network-online.target
+
+[Service]
+ExecStart=/usr/share/watchdog-internet/script
+
+[Install]
+WantedBy=multi-user.target

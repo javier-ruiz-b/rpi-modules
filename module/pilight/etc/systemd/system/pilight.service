@@ -1,0 +1,11 @@
+[Unit]
+Description=pilight
+After=network-online.target
+Wants=network-online.target 
+
+[Service]
+Restart=always
+ExecStart=/usr/local/sbin/pilight-daemon -F
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=mediamtx camera stream
+After=network-online.target
+
+[Service]
+Restart=always
+ExecStart=/usr/local/bin/mediamtx /etc/mediamtx/mediamtx.yml
+
+[Install]
+WantedBy=multi-user.target

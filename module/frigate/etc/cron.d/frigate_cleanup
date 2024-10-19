@@ -1,0 +1,2 @@
+30 * * * * root /usr/share/frigate/cronjob-delete-previous-files.sh /data/frigate/media/clips
+31 * * * * root /usr/share/frigate/cronjob-delete-previous-files.sh /data/frigate/media/recordings

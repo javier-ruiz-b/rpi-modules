@@ -1,0 +1,19 @@
+#!/bin/bash
+set -euxo pipefail
+
+src=/media/usb-ssd-4TB/syncthing/javier
+destination=/media/usb-hdd-8TB-backup/syncthing/javier/archived-camera-data
+
+remove_older_than_days=2
+
+while true; do
+    for location in javea berlin; do
+        rsync --exclude='*.tmp' -av $src/$location-cameras/ $destination/
+	find $src/$location-cameras/ -type f -mtime +$remove_older_than_days -execdir rm -- '{}' \;        
+        #chown -R syncthing:syncthing $destination
+    done
+    sleep 15s
+    inotifywait -r -e close_write,close_nowrite --exclude '.tmp$' $src/*-cameras
+done
+
+

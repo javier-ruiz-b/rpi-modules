@@ -1,0 +1,68 @@
+#!/bin/bash
+set -eu
+
+. /etc/default/watchdog-internet
+
+PING_IP="${PING_IP:-1.1.1.1}"
+test_rate=60s
+trigger_rate=10s
+retries=5
+current_retry=0
+max_load=20
+
+ping_test() {
+    if ! ping -c 1 -W 5 "$PING_IP" > /dev/null 2>&1; then
+        echo "Could not ping $PING_IP"
+        return 1
+    fi
+    return 0
+}
+
+is_load_ok() {
+    load_1=$(cut -d' ' -f1 < /proc/loadavg | cut -d. -f1)
+    if test "$load_1" -gt "$max_load"; then
+        echo "Load too high: $load_1"
+        return 1
+    fi
+    return 0
+}
+
+cleanup() {
+    exit_code="$?"
+    jobs -p | xargs kill 2>/dev/null # kill all background jobs: trigger job
+    
+    if [ "$exit_code" -ne "0" ]; then
+        shutdown -r now
+        exit 1
+    fi
+    echo "V" > /dev/watchdog
+    wall -n Watchdog disabled
+}
+
+trap 'cleanup' EXIT
+
+(
+    trap 'echo "."' EXIT
+    while true; do
+        echo "."
+        sleep "$trigger_rate"
+    done
+) >> /dev/watchdog &
+
+while true; do
+    if test $current_retry -eq $((retries-1)); then
+        wall -n "Warning: internet connection is down or load is too high. System will restart soon. Call \"systemctl disable watchdog-internet\" to avoid this." || true
+    elif test $current_retry -eq $retries; then
+        wall -n "Warning: watchdog not triggered! System will restart in 30s. Call \"systemctl disable watchdog-internet\" to avoid this." || true
+        sleep 30s
+        exit 1
+    fi
+
+    if ping_test && is_load_ok; then
+        current_retry=0
+    else
+        current_retry=$((current_retry+1))
+    fi
+
+    sleep $test_rate
+done
