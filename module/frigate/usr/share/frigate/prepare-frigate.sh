@@ -6,8 +6,8 @@ dir=/data/frigate
 mkdir -p $dir/media/clips
 mkdir -p $dir/media/recordings
 
-mount -t tmpfs tmpfs -o size=5%,noatime $dir/media/clips
-mount -t tmpfs tmpfs -o size=55%,noatime $dir/media/recordings
+mount -t tmpfs tmpfs -o size=5% $dir/media/clips
+mount -t tmpfs tmpfs -o size=55% $dir/media/recordings
 
 mkdir -p $dir/config
 
