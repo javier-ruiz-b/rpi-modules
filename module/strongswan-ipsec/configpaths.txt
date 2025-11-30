@@ -1,1 +1,1 @@
-etc/ipsec*
+etc/ipsec.conf
